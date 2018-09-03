@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	                    http://www.springframework.org/schema/beans/spring-beans.xsd
+	                    http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop.xsd
+                        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+    
+    <context:property-placeholder location="classpath:jdbc.properties,jredis.properties"/>
+	
+	<context:component-scan base-package="net.hairband">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+	<bean class="framework.context.ApplicationContext"/>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="validationQuery" value="select now();"/>
+        <property name="maxIdle" value="2"/>
+        <property name="maxWait" value="150"/>
+        <property name="removeAbandoned" value="true"/>
+        <property name="removeAbandonedTimeout" value="10"/>
+        <property name="logAbandoned" value="true"/>
+        <property name="poolPreparedStatements" value="true"/>
+    </bean>
+    
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+   
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="select*" read-only="true"/>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="save*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="insert*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="delete*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+	
+	<bean id="methodValidator" class="framework.aop.MethodNameValidator">
+		<property name="regex" value="^select.*|^save.*|^insert.*|^delete.*|^update.*|^get.*"/>
+	</bean>
+	
+	<bean id="methodSerValidator" class="framework.aop.MethodParamsValidator" />
+	
+	<bean id="classNameValidator" class="framework.aop.ClassNameValidator">
+		<property name="regex" value="[a-z0-9A-Z.]*.[a-z0-9A-Z]+Service$|[a-z0-9A-Z.]*.[a-z0-9A-Z]+Component$"/>
+	</bean>
+    <aop:config>
+        <aop:pointcut id="aopComponent" expression="execution(public * net.hairband.component..*.*(..))"/>
+        <aop:pointcut id="aopService" expression="execution(public * net.hairband.service..*.*(..))"/>
+        <aop:advisor advice-ref="methodValidator" pointcut-ref="aopComponent"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="aopComponent"/>
+        <aop:advisor advice-ref="methodSerValidator" pointcut-ref="aopService"/>
+        <aop:advisor advice-ref="classNameValidator" pointcut-ref="aopComponent"/>
+        <aop:advisor advice-ref="classNameValidator" pointcut-ref="aopService"/>
+    </aop:config>
+    
+	<bean id="keyGenerator" class="framework.cache.KeyGenerator"/>
+	<cache:annotation-driven cache-manager="cacheManager" key-generator="keyGenerator" proxy-target-class="true"/>  
+  	
+  	<bean id="cache-redis" class="framework.jredis.DefaultJredis">
+  		<property name="host" value="${jredis.host}"/>
+		<property name="port" value="${jredis.port}"/>
+  	</bean>
+  
+	<bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">  
+	    <property name="caches">  
+	        <set>  
+	            <bean class="framework.cache.CacheTool" p:name="default" >
+	            	<property name="redis" ref="cache-redis"/>
+	            </bean>
+	            <bean class="framework.cache.CacheTool" p:name="cache60" >
+	            	<property name="redis" ref="cache-redis"/>
+	            	<property name="expire" value="60"/>
+	            </bean>
+	            <bean class="framework.cache.CacheTool" p:name="cache600" >
+	            	<property name="redis" ref="cache-redis"/>
+	            	<property name="expire" value="600"/>
+	            </bean>
+	            <bean class="framework.cache.CacheTool" p:name="cache1800">
+	            	<property name="redis" ref="cache-redis"/>
+	            	<property name="expire" value="1800"/>
+	            </bean>
+	            <bean class="framework.cache.CacheTool" p:name="cache3600">
+	            	<property name="redis" ref="cache-redis"/>
+	            	<property name="expire" value="3600"/>
+	            </bean>
+	        </set>  
+	    </property>  
+	</bean> 
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="configLocation" value="classpath:configuration.xml"/>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="net.hairband.dao.user,net.hairband.dao.ext"/>
+	</bean>
+	
+</beans>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        				http://www.springframework.org/schema/beans/spring-beans.xsd
+        				http://www.springframework.org/schema/mvc
+        				http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       					http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+	    <property name="locations">  
+	        <list>  
+	            <!-- <value>classpath:jredis.properties</value> -->
+	            <value>classpath:commons.properties</value>  
+	        </list>  
+	    </property>  
+	</bean> 
+	<context:component-scan base-package="net.hairband.controller"/>
+	<!-- 启动注解支持 -->  
+    <mvc:annotation-driven />
+	<mvc:interceptors>
+	<!-- 	<bean class="framework.web.aop.DefaultRedisSessionListener">
+			<property name="token" value="cms-token"/>
+			<property name="domain" value="${cookie.domain}"/>
+			<property name="reqParams">
+				<map>
+					<entry key="staUrl">
+						<value>${commons.staUrl}</value>
+					</entry>
+					<entry key="dynUrl">
+						<value>${commons.dynUrl}</value>
+					</entry>
+					<entry key="rootUrl">
+						<value>${commons.rootUrl}</value>
+					</entry>
+					<entry key="imgUrl">
+						<value>${commons.imgUrl}</value>
+					</entry>
+				</map>
+			</property>
+			<property name="redis">
+				<bean class="framework.jredis.DefaultJredis">
+					<property name="host" value="${jredis.host}"/>
+					<property name="port" value="${jredis.port}"/>
+					<property name="poolConfig">
+						<bean class="redis.clients.jedis.JedisPoolConfig">
+							<property name="maxTotal" value="1024"/>
+					        <property name="maxIdle" value="200"/>
+					        <property name="minIdle" value="10"/>
+					        <property name="testOnBorrow" value="true"/>
+					        <property name="testOnReturn" value="true"/>
+						</bean>
+					</property>
+				</bean>
+			</property>
+		</bean> -->
+		<bean class="framework.web.aop.DefaultHttpSessionListener">
+			<property name="staUrl" value="${commons.staUrl}"/>
+			<property name="dynUrl" value="${commons.dynUrl}"/>
+			<property name="imgUrl" value="${commons.imgUrl}"/>
+			<property name="rootUrl" value="${commons.rootUrl}"/>
+		</bean>
+		<bean class="net.hairband.controller.commons.AuthHandler">
+			<property name="url">
+				<value>/user/login.htm</value>
+			</property>
+		</bean>
+	</mvc:interceptors>
+	
+	<bean id="exceptionResolver" class="framework.web.exception.DefaultExceptionResolver" >
+		<property name="errPage" value="error"/>
+		<property name="onlyAjax" value="true"/>
+	</bean>
+		
+    <mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">  
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+            	<property name="supportedMediaTypes" value="*/*"/>
+            	<property name="objectMapper">
+            		<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+            			<property name="dateFormat">
+            				<bean class="java.text.SimpleDateFormat">
+            					<constructor-arg>
+            						<value>yyyy-MM-dd HH:mm:ss</value>
+            					</constructor-arg>
+            				</bean>
+            			</property>
+            		</bean>
+            	</property>
+            </bean>  
+        </mvc:message-converters>
+	</mvc:annotation-driven> 
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		<property name="prefix" value="/WEB-INF/pages/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+</beans>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE generatorConfiguration  
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"  
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">  
+<generatorConfiguration>  
+<!-- 数据库驱动-->  
+    <classPathEntry  location="D:\\mvn\\repo\\mysql\\mysql-connector-java\\5.1.6\\mysql-connector-java-5.1.6.jar"/>  
+    <context id="hairband"  targetRuntime="MyBatis3">  
+        <commentGenerator>  
+            <property name="suppressDate" value="true"/>  
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->  
+            <property name="suppressAllComments" value="true"/>  
+            <property name="useActualColumnNames" value="true"/>
+        </commentGenerator>  
+        <!--数据库链接URL，用户名、密码 -->  
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.1.179/carloandb" userId="root" password="6louroot">  
+        </jdbcConnection>  
+        <javaTypeResolver>  
+            <property name="forceBigDecimals" value="true"/>  
+        </javaTypeResolver>  
+        <!-- 生成模型的包名和位置-->  
+        <javaModelGenerator targetPackage="net.hairband.dto.user" targetProject="src/main/java">  
+            <property name="enableSubPackages" value="false"/>  
+            <property name="trimStrings" value="true"/>  
+        </javaModelGenerator>  
+        <!-- 生成映射文件的包名和位置-->  
+        <sqlMapGenerator targetPackage="net.hairband.dao.user" targetProject="src/main/java">  
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>  
+        <!-- 生成DAO的包名和位置-->  
+        <javaClientGenerator type="XMLMAPPER" targetPackage="net.hairband.dao.user" targetProject="src/main/java">  
+            <property name="enableSubPackages" value="false"/>
+        </javaClientGenerator>  
+        <!-- 要生成哪些表-->  
+        <table tableName="cmsUser" domainObjectName="CmsUser" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+       		<property name="useActualColumnNames" value="true"/>
+       	</table>
+         <!-- 
+         <table tableName="area" domainObjectName="Area" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+       		<property name="useActualColumnNames" value="true"/>
+       	</table>
+       	<table tableName="function" domainObjectName="Function" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+       		<property name="useActualColumnNames" value="true"/>
+       	</table>
+       	<table tableName="role" domainObjectName="Role" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+       		<property name="useActualColumnNames" value="true"/>
+       		</table>
+       		<table tableName="roleFunction" domainObjectName="RoleFunction" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+       		<property name="useActualColumnNames" value="true"/>
+       	</table>
+       		
+       	
+       	<table tableName="area" domainObjectName="Area" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+       		<property name="useActualColumnNames" value="true"/>
+       	</table>
+       	<table tableName="cmsUser" domainObjectName="CmsUser" enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+       		<property name="useActualColumnNames" value="true"/>
+       	</table>
+       	-->
+       	
+       
+      <!-- 
+      -->
+    </context>  
+</generatorConfiguration>
