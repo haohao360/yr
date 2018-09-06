@@ -1,0 +1,91 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        				http://www.springframework.org/schema/beans/spring-beans.xsd
+        				http://www.springframework.org/schema/mvc
+        				http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       					http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="net.hairband.pc.client.controller">
+		
+	</context:component-scan>
+	
+	<mvc:interceptors>
+		<bean class="framework.web.aop.DefaultHttpSessionListener">
+			<property name="staUrl">
+				<value>http://test.365020.com</value>
+			</property>
+			<property name="dynUrl">
+				<value>http://test.365020.com</value>
+			</property>
+			<property name="rootUrl">
+				<value>http://test.365020.com</value>
+			</property>
+			<property name="imgUrl">
+				<value>http://img.365020.com</value>
+			</property>
+		</bean>
+		<bean class="net.sls.pc.client.filter.UserLoginFilter"></bean>
+		<bean class="net.sls.pc.client.filter.SessionFilter"></bean>
+	</mvc:interceptors>
+	
+	<bean id="exceptionResolver" class="framework.web.exception.DefaultExceptionResolver" >
+		<property name="errPage" value="error"/>
+		<property name="onlyAjax" value="true"/>
+	</bean>
+		
+    <mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">  
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+            	<property name="supportedMediaTypes" value="*/*"/>
+            	<property name="objectMapper">
+            		<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+            			<property name="dateFormat">
+            				<bean class="java.text.SimpleDateFormat">
+            					<constructor-arg>
+            						<value>yyyy-MM-dd HH:mm:ss</value>
+            					</constructor-arg>
+            				</bean>
+            			</property>
+            		</bean>
+            	</property>
+            </bean>  
+        </mvc:message-converters>
+	</mvc:annotation-driven>
+
+
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		<property name="prefix" value="/WEB-INF/pages/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">  
+        <property name="config">  
+            <bean class="com.google.code.kaptcha.util.Config">  
+                <constructor-arg>  
+                    <props>  
+                        <prop key="kaptcha.border">no</prop>  
+                        <prop key="kaptcha.border.color">105,179,90</prop>  
+                        <prop key="kaptcha.textproducer.font.color">red</prop>  
+                        <prop key="kaptcha.image.width">250</prop>  
+                        <prop key="kaptcha.textproducer.font.size">90</prop>  
+                        <prop key="kaptcha.image.height">90</prop>  
+                        <prop key="kaptcha.session.key">code</prop>  
+                        <prop key="kaptcha.textproducer.char.length">4</prop>  
+                        <prop key="kaptcha.textproducer.font.names">宋体,楷体,微软雅黑</prop>  
+                    </props>  
+                </constructor-arg>  
+            </bean>  
+        </property>  
+    </bean>
+    
+    <bean id="cache-redis" class="framework.jredis.DefaultJredis">
+  		<property name="host" value="redis.cache.365020.com"/>
+		<property name="port" value="6379"/>
+  	</bean>
+</beans>
