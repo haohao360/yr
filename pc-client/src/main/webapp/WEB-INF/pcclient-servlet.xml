@@ -1,4 +1,4 @@
- <?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:mvc="http://www.springframework.org/schema/mvc"
     xmlns:context="http://www.springframework.org/schema/context"
@@ -29,8 +29,8 @@
 				<value>http://img.365020.com</value>
 			</property>
 		</bean>
-		<bean class="net.sls.pc.client.filter.UserLoginFilter"></bean>
-		<bean class="net.sls.pc.client.filter.SessionFilter"></bean>
+		<bean class="net.hairband.pc.client.filter.UserLoginFilter"></bean>
+		<bean class="net.hairband.pc.client.filter.SessionFilter"></bean>
 	</mvc:interceptors>
 	
 	<bean id="exceptionResolver" class="framework.web.exception.DefaultExceptionResolver" >

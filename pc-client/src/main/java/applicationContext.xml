@@ -18,13 +18,13 @@
     
     <context:property-placeholder location="classpath:jdbc.properties,classpath:jredis.properties"/>
 	
-	<context:component-scan base-package="net.sls">
+	<context:component-scan base-package="net.hairband">
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
 	
-	<bean id="solrSearch" class="net.sls.pc.search.Searcher"/>
+	<!-- <bean id="solrSearch" class="net.hairband.pc.search.Searcher"/> -->
 
 	<bean class="framework.context.ApplicationContext"/>
 	
@@ -59,8 +59,8 @@
 	<bean id="aopExceptionResolve" class="framework.aop.ExceptionResolve"/>
 	
     <aop:config>
-        <aop:pointcut id="aopComponent" expression="execution(public * net.sls.component..*.*(..))"/>
-        <aop:pointcut id="aopService" expression="execution(public * net.sls.service..*.*(..))"/>
+        <aop:pointcut id="aopComponent" expression="execution(public * net.hairband.component..*.*(..))"/>
+        <aop:pointcut id="aopService" expression="execution(public * net.hairband.service..*.*(..))"/>
         <aop:advisor advice-ref="methodValidator" pointcut-ref="aopComponent"/>
         <aop:advisor advice-ref="txAdvice" pointcut-ref="aopComponent"/>
         <aop:advisor advice-ref="methodSerValidator" pointcut-ref="aopService"/>
@@ -107,7 +107,7 @@
 		<property name="configLocation" value="classpath:configuration.xml"/>
 	</bean>
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="net.sls.dao.pc"/>
+		<property name="basePackage" value="net.hairband.dao.pc"/>
 	</bean>
 	
 </beans>
